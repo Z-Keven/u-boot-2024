@@ -4,9 +4,87 @@
  */
 
 #include "rk3588-u-boot.dtsi"
+#include <dt-bindings/usb/pd.h>
 
 / {
 	chosen {
 		u-boot,spl-boot-order = "same-as-spl", &sdhci;
+	};
+};
+
+&u2phy0 {
+	status = "okay";
+};
+
+&u2phy0_otg {
+	status = "okay";
+};
+
+&u2phy1 {
+	status = "okay";
+};
+
+&u2phy1_otg {
+	status = "okay";
+};
+
+&usbdp_phy0_u3 {
+	status = "okay";
+};
+
+&usbdp_phy0_dp {
+	status = "okay";
+};
+
+&usbdp_phy1 {
+	status = "okay";
+};
+
+&usbdp_phy1_dp {
+	status = "disabled";
+};
+
+&usbdp_phy1_u3 {
+	status = "okay";
+};
+
+&i2c3 {
+	status = "okay";
+	usbc1: fusb302@22 {
+		compatible = "fcs,fusb302";
+		reg = <0x22>;
+		interrupt-parent = <&gpio3>;
+		interrupts = <RK_PC4 IRQ_TYPE_LEVEL_LOW>;
+		int-n-gpios = <&gpio3 RK_PC4 GPIO_ACTIVE_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&usbc1_int>;
+		//vbus-supply = <&vcc12v_dcin>;
+		vbus-supply = <&vcc5v0_usbdcin>;
+		status = "okay";
+		usb_con1: connector {
+			compatible = "usb-c-connector";
+			label = "USB-C";
+			data-role = "dual";
+			power-role = "dual";
+			try-power-role = "sink";
+			op-sink-microwatt = <1000000>;
+			sink-pdos =
+				<PDO_FIXED(5000, 3000, PDO_FIXED_USB_COMM)
+				 PDO_FIXED(9000, 3000, PDO_FIXED_USB_COMM)
+				 PDO_FIXED(12000, 3000, PDO_FIXED_USB_COMM)>;
+			source-pdos =
+				<PDO_FIXED(5000, 3000, PDO_FIXED_USB_COMM)>;
+
+			altmodes {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				altmode@0 {
+					reg = <0>;
+					svid = <0xff01>;
+					vdo = <0xffffffff>;
+				};
+			};
+		};
 	};
 };
